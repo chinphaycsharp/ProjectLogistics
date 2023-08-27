@@ -1,0 +1,15 @@
+C:\Users\PC\source\repos\Logistics\Logistics.Service\bin\Debug\net5.0\Logistics.Service.deps.json
+C:\Users\PC\source\repos\Logistics\Logistics.Service\bin\Debug\net5.0\Logistics.Service.dll
+C:\Users\PC\source\repos\Logistics\Logistics.Service\bin\Debug\net5.0\Logistics.Service.pdb
+C:\Users\PC\source\repos\Logistics\Logistics.Service\obj\Debug\net5.0\Logistics.Service.csproj.AssemblyReference.cache
+C:\Users\PC\source\repos\Logistics\Logistics.Service\obj\Debug\net5.0\Logistics.Service.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\PC\source\repos\Logistics\Logistics.Service\obj\Debug\net5.0\Logistics.Service.AssemblyInfoInputs.cache
+C:\Users\PC\source\repos\Logistics\Logistics.Service\obj\Debug\net5.0\Logistics.Service.AssemblyInfo.cs
+C:\Users\PC\source\repos\Logistics\Logistics.Service\obj\Debug\net5.0\Logistics.Service.csproj.CoreCompileInputs.cache
+C:\Users\PC\source\repos\Logistics\Logistics.Service\obj\Debug\net5.0\Logistics.Service.dll
+C:\Users\PC\source\repos\Logistics\Logistics.Service\obj\Debug\net5.0\refint\Logistics.Service.dll
+C:\Users\PC\source\repos\Logistics\Logistics.Service\obj\Debug\net5.0\Logistics.Service.pdb
+C:\Users\PC\source\repos\Logistics\Logistics.Service\obj\Debug\net5.0\ref\Logistics.Service.dll
+C:\Users\PC\source\repos\Logistics\Logistics.Service\bin\Debug\net5.0\Logistics.Data.dll
+C:\Users\PC\source\repos\Logistics\Logistics.Service\bin\Debug\net5.0\Logistics.Data.pdb
+C:\Users\PC\source\repos\Logistics\Logistics.Service\obj\Debug\net5.0\Logistics.Service.csproj.CopyComplete
