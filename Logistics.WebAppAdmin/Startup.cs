@@ -38,7 +38,8 @@ namespace Logistics.WebAppAdmin
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IVTopOrderMaxPriceRepository, VTopOrderMaxPriceRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
-            //services.AddScoped<IStudentRepository, StudentRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
             //services.AddScoped<IStudentScoreRepository, StudentScoreRepository>();
             //services.AddScoped<IScoreRepository, ScoreRepository>();
             //services.AddScoped<ISubjectRepository, SubjectRepository>();
@@ -51,7 +52,8 @@ namespace Logistics.WebAppAdmin
             services.AddScoped<IAccountService, AccountServiceImpl>();
             services.AddScoped<IVTopOrderMaxPriceService, VTopOrderMaxPriceImpl>();
             services.AddScoped<IOrderService, OrderServiceImpl>();
-            //services.AddScoped<IVStudentsubjectscoreService, VStudentsubjectscoreServiceImpl>();
+            services.AddScoped<IProductService, ProductServiceImpl>();
+            services.AddScoped<IOrderDetailService, OrderItemServiceImpl>();
             //services.AddScoped<IVStudentTopHighMediumScoreService, VStudentTopHighMediumScoreImpl>();
             //services.AddScoped<IScoreService, ScoreServiceImpl>();
             //services.AddScoped<ISubjectService, SubjectServiceImpl>();
@@ -104,6 +106,11 @@ namespace Logistics.WebAppAdmin
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllerRoute(
+                  name: "areas",
+                  pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+                );
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Auth}/{action=Index}/{id?}");

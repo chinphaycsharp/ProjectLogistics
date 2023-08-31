@@ -1,0 +1,139 @@
+﻿
+@{
+    ViewData["Title"] = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    #container {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+    }
+</style>
+
+@section Scripts
+    {
+    <script src="~/assets/js/notification.js"></script>
+    <script>
+        Init();
+
+        function Init() {
+            console.log(1);
+            InitDatetimePicker();
+        }
+
+        function InitDatetimePicker() {
+            $("#delivery_date").datepicker();
+            $("#estimate_delivery_date").datepicker();
+        }
+
+
+        function UpdateOrder(id) {
+            var email = document.getElementById('email').value;
+            var name = document.getElementById('name').value;
+            var fullname = document.getElementById('name').value;
+            var address = document.getElementById('address').value;
+            var phone = document.getElementById('phone').value;
+            var delivery_date = document.getElementById('delivery_date').value;
+            var estimate_delivery_date = document.getElementById('estimate_delivery_date').value;
+            var status = document.getElementById('status').checked;
+            var delivery_address = document.getElementById('delivery_address').value;
+
+            var order = new Object();
+            order.id = id;
+            order.customeremail = email;
+            order.customername = name;
+            order.customeraddress = address;
+            order.customerphone = phone;
+            order.deliverydate = delivery_date;
+            order.estimatedeliverydate = estimate_delivery_date;
+            order.status = status;
+            order.deliveryaddress = delivery_address;
+            console.log(order);
+            $.ajax({
+                type: 'POST',
+                url: 'https://localhost:44358/Order/UpdateOrder',
+                dataType: 'json',
+                data: { body: JSON.stringify(order) },
+                success: function (data) {
+                    console.log(data);
+                    if (data.resultObj == true) {
+                        CreateNotification(data.message, "success");
+                        window.location.href = "https://localhost:44358/Order/Index";
+                    }
+                    else {
+                        CreateNotification(data.message, "error");
+                    }
+                },
+                error: function (emp) {
+                    alert('error');
+                }
+            })
+        }
+    </script>
+}
+
+
+<div id="container"></div>
+
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+     data-sidebar-position="fixed" data-header-position="fixed">
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+        <!--  Header Start -->
+        <partial name="_Header" />
+        <!--  Header End -->
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title fw-semibold mb-4">Update order</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label class="form-label">Order Id</label>
+                                    <input type="text" class="form-control" disabled value="@Model.Id" id="identity">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Customer Email</label>
+                                    <input type="text" class="form-control" value="@Model.CustomerEmail" id="email">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Customer Name</label>
+                                    <input type="text" class="form-control" value="@Model.CustomerName" id="name">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Customer Address</label>
+                                    <input type="text" class="form-control" value="@Model.CustomerAddress" id="address">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Customer Phone</label>
+                                    <input type="text" class="form-control" value="@Model.CustomerPhone" id="phone">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Delivery Date</label>
+                                    <input id="delivery_date" type="text" value="@Model.DeliveryDate"  class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Estimate Delivery Date</label>
+                                    <input id="estimate_delivery_date" type="text" value="@Model.EstimateDeliveryDate" class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <input type="checkbox" class="form-check-input" checked="@Model.Status" id="status">
+                                    <label class="form-check-label"  for="exampleCheck1">Status Delivered</label>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Delivery Address</label>
+                                    <input type="text" class="form-control" value="@Model.DeliveryAddress" id="delivery_address">
+                                </div>
+                                <button type="button" onclick="UpdateOrder('@Model.Id')" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div id="container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

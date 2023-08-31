@@ -11,5 +11,6 @@ namespace Logistics.Data.DTO.Order
         public List<T> Items { get; set; }
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
+        public int TotalPages{ get; set; }
     }
 }

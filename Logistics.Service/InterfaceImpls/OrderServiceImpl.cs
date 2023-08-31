@@ -7,7 +7,6 @@ using QuanLySinhVien.Service.Infrastructures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Logistics.Service.InterfaceImpls
@@ -15,11 +14,13 @@ namespace Logistics.Service.InterfaceImpls
     public class OrderServiceImpl : IOrderService
     {
         IOrderRepository _orderRepository;
+        IProductRepository _productRepository;
         IUnitOfWork _unitOfWork;
 
-        public OrderServiceImpl(IOrderRepository orderRepository, IUnitOfWork unitOfWork)
+        public OrderServiceImpl(IOrderRepository orderRepository, IProductRepository productRepository, IUnitOfWork unitOfWork)
         {
             this._orderRepository = orderRepository;
+            this._productRepository= productRepository;
             this._unitOfWork = unitOfWork;
         }
 
@@ -59,15 +60,75 @@ namespace Logistics.Service.InterfaceImpls
             return _orderRepository.GetOrderById(id);
         }
 
+        public OrderDetailDTO GetOrderDTOById(string id)
+        {
+            var order = _orderRepository.GetOrderById(id);
+            var products = _productRepository.GetAllProductsByOrderId(id);
+            OrderDetailDTO orderDetail = new OrderDetailDTO()
+            {
+                Id = id,
+                CustomerName = order.CustomerName,
+                CustomerAddress = order.CustomerAddress,
+                CustomerEmail = order.CustomerEmail,
+                CustomerPhone = order.CustomerPhone,
+                DeliveryAddress = order.DeliveryAddress,
+                DeliveryDate = order.DeliveryDate,
+                EstimateDeliveryDate= order.DeliveryDate,
+                Status = order.Status
+            };
+
+            List<OrderItem> orderItems = new List<OrderItem>();
+            foreach (var item in products)
+            {
+                var isExist =  orderItems.Any(x=> x.ProductId == item.ProductId);
+                if (isExist)
+                {
+                    var data = orderItems.FirstOrDefault(x => x.ProductId == item.ProductId);
+                    data.Quantity = data.Quantity + item.Quantity;
+                    data.TotalPrice = data.TotalPrice + item.TotalPrice;
+                }
+                else
+                {
+                    orderItems.Add(item);
+                }
+            }
+
+            orderDetail.OrderItems = orderItems;
+            return orderDetail;
+        }
+
         public Task<PaginatedList<Order>> GetOrders(OrderSearchDTO orderSearchDTO)
         {
             var result = _orderRepository.GetOrders(orderSearchDTO);
             return result;
         }
 
-        public bool UpdateStatus()
+        public bool UpdateOrder(Order order)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _orderRepository.Update(order);
+                _unitOfWork.Commit();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateStatus(Order order)
+        {
+            try
+            {
+                _orderRepository.Update(order);
+                _unitOfWork.Commit();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

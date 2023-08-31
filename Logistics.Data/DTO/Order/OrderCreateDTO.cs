@@ -13,8 +13,12 @@ namespace Logistics.Data.DTO.Order
         public string CustomerAddress { get; set; }
         public string CustomerPhone { get; set; }
         public string CustomerEmail { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         public string DeliveryAddress { get; set; }
-        public string ProductId { get; set; }
-        public int Quantity { get;set; }
+        public DateTime? EstimateDeliveryDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public bool? Status { get; set; }
+        public List<OrderItem> OrderItems { get; set; }
     }
 }

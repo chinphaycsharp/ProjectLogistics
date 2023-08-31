@@ -9,8 +9,10 @@ namespace Logistics.Service.Interfaces
     public interface IOrderService
     {
         Task<PaginatedList<Order>> GetOrders(OrderSearchDTO orderSearchDTO);
+        OrderDetailDTO GetOrderDTOById(string id);
         Order GetOrderById(string id);
         bool CreateOrder(OrderCreateDTO order);
-        bool UpdateStatus();
+        bool UpdateStatus(Order order);
+        bool UpdateOrder(Order order);
     }
 }

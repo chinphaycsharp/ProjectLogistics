@@ -32,19 +32,106 @@ namespace Logistics.WebAppAdmin.Controllers
 
             var results = await _orderService.GetOrders(model);
 
-            //ViewData["CurrentFilter"] = searchString;
             if (results.Capacity > 0) {
                 ApiResult<OrderGridPagingDTO<Order>> result = new ApiResult<OrderGridPagingDTO<Order>>();
                 OrderGridPagingDTO<Order> resultPaging = new OrderGridPagingDTO<Order>()
                 {
                     Items = results,
                     PageIndex = results.PageIndex,
-                    PageSize = results.TotalPages
+                    PageSize = results.Capacity,
+                    TotalPages = results.TotalPages
                 };
                 var a = results.PageIndex;
                 result.Message = "";
                 result.ResultObj = resultPaging;
                 result.statusCode = 200;
+                return Json(result);
+            }
+            else
+            {
+                ApiResult<string> result = new ApiResult<string>();
+                result.Message = "No data.";
+                result.ResultObj = "";
+                result.statusCode = 200;
+                return Json(result);
+            }
+        }
+
+        public IActionResult Detail(string id)
+        {
+            var order = _orderService.GetOrderById(id);
+            return View(order);
+        }
+
+        [HttpPost]
+        public JsonResult UpdateOrder(string body)
+        {
+            OrderUpdateDTO model = JsonConvert.DeserializeObject<OrderUpdateDTO>(body);
+            var order = _orderService.GetOrderById(model.Id);
+
+            if (order != null)
+            {
+                //order.Id= model.Id;
+                order.CustomerName = model.CustomerName;
+                order.CustomerPhone = model.CustomerPhone;
+                order.CustomerEmail = model.CustomerEmail;
+                order.CustomerAddress = model.CustomerAddress;
+                order.DeliveryAddress = model.DeliveryAddress;
+                order.DeliveryDate = model.DeliveryDate;
+                order.EstimateDeliveryDate = model.EstimateDeliveryDate;
+                order.UpdatedDate = DateTime.Now;
+                order.Status = order.Status;
+                ApiResult<bool> result = new ApiResult<bool>();
+                var isUpdated = _orderService.UpdateOrder(order);
+                if (isUpdated)
+                {
+                    result.ResultObj = isUpdated;
+                    result.Message = "Update successfully.";
+                    result.statusCode = 200;
+                }
+                else
+                {
+                    result.ResultObj = isUpdated;
+                    result.Message = "Update fail.";
+                    result.statusCode = 200;
+                }
+
+                return Json(result);
+            }
+            else
+            {
+                ApiResult<string> result = new ApiResult<string>();
+                result.Message = "No data.";
+                result.ResultObj = "";
+                result.statusCode = 200;
+                return Json(result);
+            }
+        }
+
+        [HttpPost]
+        public  JsonResult UpdateStatus(string id)
+        {
+            var order =  _orderService.GetOrderById(id);
+
+            if (order != null)
+            {
+
+                order.Status = !order.Status;
+                ApiResult<bool> result = new ApiResult<bool>();
+                var isUpdated = _orderService.UpdateStatus(order);
+                if (isUpdated)
+                {
+                    result.ResultObj = isUpdated;
+                    result.Message = "Update status to delivered.";
+                    result.statusCode = 200;
+                }
+                else
+                {
+                    result.ResultObj = isUpdated;
+                    result.Message = "Update status fail.";
+                    result.statusCode = 200;
+                }
+
                 return Json(result);
             }
             else

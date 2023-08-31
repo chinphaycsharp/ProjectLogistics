@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logistics.Service", "Logist
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logistics.WebAppAdmin", "Logistics.WebAppAdmin\Logistics.WebAppAdmin.csproj", "{D7DAA1B3-E35A-4C39-A2EB-D3D15A4A52A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logistics.WebAppClient", "Logistics.WebAppClient\Logistics.WebAppClient.csproj", "{F488965B-D4EA-43FC-9136-AA10C5F2591E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{D7DAA1B3-E35A-4C39-A2EB-D3D15A4A52A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7DAA1B3-E35A-4C39-A2EB-D3D15A4A52A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7DAA1B3-E35A-4C39-A2EB-D3D15A4A52A4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F488965B-D4EA-43FC-9136-AA10C5F2591E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F488965B-D4EA-43FC-9136-AA10C5F2591E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F488965B-D4EA-43FC-9136-AA10C5F2591E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F488965B-D4EA-43FC-9136-AA10C5F2591E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

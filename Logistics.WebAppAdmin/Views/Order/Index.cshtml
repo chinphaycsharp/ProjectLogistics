@@ -5,12 +5,13 @@
 }
 @section Scripts
     {
+    <script src="~/assets/js/notification.js"></script>
     <script>
-        var pageIndex = 1;
+        Init();
 
         function Init() {
             InitDatetimePicker();
-            GetOrderUsingAjax();
+            GetOrderUsingAjax(1);
         }
 
         function InitDatetimePicker() {
@@ -18,11 +19,8 @@
             $("#datepicker_end").datepicker();
         }
 
-        function GetOrderUsingAjax(value) {
-            if(value == undefined)
-            {
-                pageIndex = 1;
-            }
+        function GetOrderUsingAjax(pageNum, pageSize) {
+            $("#paged").empty();
             var OrderSearch = new Object();
             var searchValue = document.getElementById('search_value');
             var datepickerStart = document.getElementById('datepicker_start');
@@ -31,9 +29,10 @@
             OrderSearch.SearchValue = null;
             OrderSearch.DateStart = null;
             OrderSearch.DateEnd = null;
-            OrderSearch.PageIndex = pageIndex;
-            OrderSearch.PageNumber = 5;
-            pageIndex = pageIndex + value;
+            OrderSearch.PageIndex = pageNum;
+            OrderSearch.PageNumber = 2;
+
+
             if (searchValue.value != null && searchValue.value != "") {
                 OrderSearch.SearchValue = searchValue.value;
             }
@@ -50,11 +49,17 @@
                 data: { body: JSON.stringify(OrderSearch) },
                 success: function (data) {
                     console.log(data.resultObj);
-
                     $('#tblorders tbody > tr').remove();
                     if (data.resultObj.items != null) {
                         var rows;
                         $.each(data.resultObj.items, function (i, item) {
+                            let btnCart = "";
+                            if (item.status) {
+                                btnCart = btnCart + "<button type ='button' class='btn btn-success' onclick='UpdateStatus(\"" + item.id + "\")' ><i class='ti ti-garden-cart-off'></i></button>";
+                            }
+                            else {
+                                btnCart = btnCart + "<button type ='button' class='btn btn-secondary ' onclick='UpdateStatus(\"" + item.id + "\")' ><i class='ti ti-garden-cart'></i></button>";
+                            }
                             rows += "<tr>"
                                 + "<td>" + item.id + "</td>"
                                 + "<td>" + item.customerEmail + "</td>"
@@ -63,11 +68,13 @@
                                 + "<td>" + item.deliveryAddress + "</td>"
                                 + "<td>" + item.deliveryDate + "</td>"
                                 + "<td>" + item.estimateDeliveryDate + "</td>"
+                                + "<td>" + btnCart + "</td>"
                                 + "<td> <a class='btn btn-warning' href='/Order/Detail/" + item.id + "'><i class='ti ti-edit'></i></a><button type ='button' class='btn btn-danger' onclick='DeleteRecord(" + item.id + ")' ><i class='ti ti-trash-x'></i></button></td>"
                                 + "</tr>";
                             ;
                         });
                         $('#tblorders tbody').append(rows);
+                        PaggingTemplate(data.resultObj.totalPages, data.resultObj.pageIndex);
                     }
                 },
                 error: function (emp) {
@@ -76,10 +83,81 @@
             });
         }
 
-        Init();
+        function PaggingTemplate(totalPage, currentPage) {
+            console.log(totalPage);
+            console.log(currentPage);
+            var template = "";
+            var TotalPages = totalPage;
+            var CurrentPage = currentPage;
+            var PageNumberArray = Array();
+
+
+            var countIncr = 1;
+            for (var i = currentPage; i <= totalPage; i++) {
+                PageNumberArray[0] = currentPage;
+                if (totalPage != currentPage && PageNumberArray[countIncr - 1] != totalPage) {
+                    PageNumberArray[countIncr] = i + 1;
+                }
+                countIncr++;
+            };
+            PageNumberArray = PageNumberArray.slice(0, 5);
+            var FirstPage = 1;
+            var LastPage = totalPage;
+            if (totalPage != currentPage) {
+                var ForwardOne = currentPage + 1;
+            }
+            var BackwardOne = 1;
+            if (currentPage > 1) {
+                BackwardOne = currentPage - 1;
+            }
+
+            template = "<p>" + CurrentPage + " of " + TotalPages + " pages</p>"
+            template = template + '<ul class="pagination">' +
+                '<li class="previous"><a href="#" onclick="GetOrderUsingAjax(' + FirstPage + ')"><i class="ti ti-arrow-big-left-filled"></i>&nbsp;First</a></li>' +
+                '<li><a href="#" onclick="GetOrderUsingAjax(' + BackwardOne + ')"><<</a>';
+
+            var numberingLoop = "";
+            for (var i = 0; i < PageNumberArray.length; i++) {
+                numberingLoop = numberingLoop + '<a class="page-number active" onclick="GetOrderUsingAjax(' + PageNumberArray[i] + ')" href="#">' + PageNumberArray[i] + ' &nbsp;&nbsp;</a>'
+            }
+            template = template + numberingLoop + '<a href="#" onclick="GetOrderUsingAjax(' + ForwardOne + ')" >>></a></li>' +
+                '<li class="next"><a href="#" onclick="GetOrderUsingAjax(' + LastPage + ')">Last&nbsp;<i class="ti ti-arrow-big-right-filled"></i></a></li></ul>';
+            $("#paged").append(template);
+
+        }
+
+        function UpdateStatus(id) {
+            console.log(id);
+            $.ajax({
+                type: 'POST',
+                url: 'https://localhost:44358/Order/UpdateStatus',
+                dataType: 'json',
+                data: { id: id },
+                success: function (data) {
+                    console.log(data);
+                    if (data.resultObj == true) {
+                        CreateNotification(data.message, "success");
+                        GetOrderUsingAjax(1);
+                    }
+                    else {
+                        CreateNotification(data.message, "error");
+                    }
+                },
+                error: function (emp) {
+                    alert('error');
+                }
+            })
+        }
     </script>
 }
 
+<style>
+    #container {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+    }
+</style>
 <div id="container"></div>
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
      data-sidebar-position="fixed" data-header-position="fixed">
@@ -140,6 +218,9 @@
                                                 <th class="border-bottom-0">
                                                     <h6 class="fw-semibold mb-0">Estimate Delivery Time</h6>
                                                 </th>
+                                                <th class="border-bottom-0">
+                                                    <h6 class="fw-semibold mb-0">Delivered</h6>
+                                                </th>
                                                 <th class="border-bottom-0 text-center">
                                                     <h6 class="fw-semibold mb-0">###</h6>
                                                 </th>
@@ -150,11 +231,7 @@
                                     </table>
                                 </div>
                                 <div style="margin-top:10px">
-                                    <nav aria-label="Page navigation example">
-                                        <ul class="pagination">
-                                            <li class="page-item"><a class="page-link" onclick="GetOrderUsingAjax(-1)" href="#">Previous</a></li>
-                                            <li class="page-item"><a class="page-link" onclick="GetOrderUsingAjax(1)" href="#">Next</a></li>
-                                        </ul>
+                                    <nav aria-label="Page navigation example" id="paged">
                                     </nav>
                                 </div>
                             </div>
