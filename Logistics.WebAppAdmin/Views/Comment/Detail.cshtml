@@ -1,0 +1,109 @@
+﻿@{
+    ViewData["Title"] = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    #container {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+    }
+</style>
+
+@section Scripts
+    {
+    <script src="~/assets/js/notification.js"></script>
+    <script>
+        Init();
+
+        function Init() {
+            console.log(1);
+            InitDatetimePicker();
+        }
+
+        function InitDatetimePicker() {
+            $("#delivery_date").datepicker();
+            $("#estimate_delivery_date").datepicker();
+        }
+
+
+        function UpdateComment(id) {
+            var client_name = document.getElementById('client_name').value;
+            var count_stars = document.getElementById('count_stars').value;
+            var content = document.getElementById('content').value;
+
+            var order = new Object();
+            order.Id = id;
+            order.ClientName = client_name;
+            order.Content = content;
+            order.CountStars = count_stars;
+            console.log(order);
+            $.ajax({
+                type: 'POST',
+                url: 'https://localhost:44358/Comment/UpdateComment',
+                dataType: 'json',
+                data: { body: JSON.stringify(order) },
+                success: function (data) {
+                    console.log(data);
+                    if (data.resultObj == true) {
+                        CreateNotification(data.message, "success");
+                        setTimeout(() => {
+                            window.location.href = "https://localhost:44358/Comment/Index";
+                        }, 2000);
+                    }
+                    else {
+                        CreateNotification(data.message, "error");
+                    }
+                },
+                error: function (emp) {
+                    alert('error');
+                }
+            })
+        }
+    </script>
+}
+
+
+<div id="container"></div>
+
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+     data-sidebar-position="fixed" data-header-position="fixed">
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+        <!--  Header Start -->
+        <partial name="_Header" />
+        <!--  Header End -->
+        <div class="">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title fw-semibold mb-4">Update Comment</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label class="form-label">Id</label>
+                                    <input type="text" class="form-control" disabled value="@Model.Id" id="identity">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Client Name</label>
+                                    <input type="text" class="form-control" value="@Model.ClientName" id="client_name">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Content</label>
+                                    <textarea type="text" class="form-control" id="content" style="height:150px">@Model.Content</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Star Count</label>
+                                    <input type="text" class="form-control" value="@Model.CountStars" id="count_stars">
+                                </div>
+                                <button type="button" onclick="UpdateComment('@Model.Id')" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div id="container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

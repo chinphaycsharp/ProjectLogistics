@@ -1,4 +1,6 @@
 C:\Users\PC\source\repos\Logistics\Logistics.Data\bin\Debug\net5.0\Logistics.Data.deps.json
+C:\Users\PC\source\repos\Logistics\Logistics.Data\bin\Debug\net5.0\Logistics.Data.runtimeconfig.json
+C:\Users\PC\source\repos\Logistics\Logistics.Data\bin\Debug\net5.0\Logistics.Data.runtimeconfig.dev.json
 C:\Users\PC\source\repos\Logistics\Logistics.Data\bin\Debug\net5.0\Logistics.Data.dll
 C:\Users\PC\source\repos\Logistics\Logistics.Data\bin\Debug\net5.0\Logistics.Data.pdb
 C:\Users\PC\source\repos\Logistics\Logistics.Data\obj\Debug\net5.0\Logistics.Data.csproj.AssemblyReference.cache
@@ -9,7 +11,5 @@ C:\Users\PC\source\repos\Logistics\Logistics.Data\obj\Debug\net5.0\Logistics.Dat
 C:\Users\PC\source\repos\Logistics\Logistics.Data\obj\Debug\net5.0\Logistics.Data.dll
 C:\Users\PC\source\repos\Logistics\Logistics.Data\obj\Debug\net5.0\refint\Logistics.Data.dll
 C:\Users\PC\source\repos\Logistics\Logistics.Data\obj\Debug\net5.0\Logistics.Data.pdb
-C:\Users\PC\source\repos\Logistics\Logistics.Data\obj\Debug\net5.0\ref\Logistics.Data.dll
-C:\Users\PC\source\repos\Logistics\Logistics.Data\bin\Debug\net5.0\Logistics.Data.runtimeconfig.json
-C:\Users\PC\source\repos\Logistics\Logistics.Data\bin\Debug\net5.0\Logistics.Data.runtimeconfig.dev.json
 C:\Users\PC\source\repos\Logistics\Logistics.Data\obj\Debug\net5.0\Logistics.Data.genruntimeconfig.cache
+C:\Users\PC\source\repos\Logistics\Logistics.Data\obj\Debug\net5.0\ref\Logistics.Data.dll

@@ -14,10 +14,12 @@ namespace Logistics.WebAppAdmin.Controllers
     public class OrderController : BaseController
     {
         private readonly IOrderService _orderService;
+        private readonly IOrderDetailService _orderDetailService;
 
-        public OrderController(ILogger<OrderController> logger, IOrderService orderService)
+        public OrderController(ILogger<OrderController> logger, IOrderService orderService, IOrderDetailService orderDetailService)
         {
             _orderService = orderService;
+            _orderDetailService = orderDetailService;
         }
 
         public IActionResult Index()
@@ -138,6 +140,48 @@ namespace Logistics.WebAppAdmin.Controllers
             {
                 ApiResult<string> result = new ApiResult<string>();
                 result.Message = "No data.";
+                result.ResultObj = "";
+                result.statusCode = 200;
+                return Json(result);
+            }
+        }
+
+        [HttpPost]
+        public JsonResult DeleteOrder(string id)
+        {
+            var order = _orderService.GetOrderById(id);
+
+            if (order != null)
+            {
+                var orderdetails = _orderDetailService.GetAllOrderDetailByOrderId(id);
+                if(orderdetails.Count > 0)
+                {
+                    foreach (var item in orderdetails)
+                    {
+                        _orderDetailService.DeleteOrderDetail(item);
+                    }
+                }
+                ApiResult<bool> result = new ApiResult<bool>();
+                var isUpdated = _orderService.DeleteOrder(order);
+                if (isUpdated)
+                {
+                    result.ResultObj = isUpdated;
+                    result.Message = "Order has been deleted.";
+                    result.statusCode = 200;
+                }
+                else
+                {
+                    result.ResultObj = isUpdated;
+                    result.Message = "Delete order fail.";
+                    result.statusCode = 200;
+                }
+
+                return Json(result);
+            }
+            else
+            {
+                ApiResult<string> result = new ApiResult<string>();
+                result.Message = "Error system.";
                 result.ResultObj = "";
                 result.statusCode = 200;
                 return Json(result);

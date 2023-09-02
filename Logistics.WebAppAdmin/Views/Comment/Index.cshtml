@@ -1,0 +1,229 @@
+﻿@model Logistics.Service.Commons.PaginatedList<Logistics.Data.Entities.Comment>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Scripts
+    {
+    <script src="~/assets/js/notification.js"></script>
+    <script>
+        Init();
+
+        function Init() {
+            InitDatetimePicker();
+            GetOrderUsingAjax(1);
+        }
+
+        function InitDatetimePicker() {
+            $("#datepicker_start").datepicker();
+            $("#datepicker_end").datepicker();
+        }
+
+        function GetOrderUsingAjax(pageNum, pageSize) {
+            $("#paged").empty();
+            var OrderSearch = new Object();
+            var searchValue = document.getElementById('search_value');
+
+            OrderSearch.SearchValue = null;
+            OrderSearch.PageIndex = pageNum;
+            OrderSearch.PageNumber = 2;
+
+
+            if (searchValue.value != null && searchValue.value != "") {
+                OrderSearch.SearchValue = searchValue.value;
+            }
+            $.ajax({
+                type: 'GET',
+                url: 'https://localhost:44358/Comment/GetComments',
+                dataType: 'json',
+                data: { body: JSON.stringify(OrderSearch) },
+                success: function (data) {
+                    console.log(data.resultObj);
+                    $('#tblcomments tbody > tr').remove();
+                    if (data.resultObj.items != null) {
+                        var rows;
+                        $.each(data.resultObj.items, function (i, item) {
+                            rows += "<tr>"
+                                + "<td>" + item.clientName + "</td>"
+                                + "<td>" + item.countStars + "</td>"
+                                + "<td>" + item.createdDate + "</td>"
+                                + "<td> <a class='btn btn-warning' href='/Comment/Detail/" + item.id + "'><i class='ti ti-edit'></i></a><button type ='button' class='btn btn-danger' onclick='DeleteRecord(" + item.id + ")' ><i class='ti ti-trash-x'></i></button></td>"
+                                + "</tr>";
+                            ;
+                        });
+                        $('#tblcomments tbody').append(rows);
+                        PaggingTemplate(data.resultObj.totalPages, data.resultObj.pageIndex);
+                    }
+                },
+                error: function (emp) {
+                    alert('error');
+                }
+            });
+        }
+
+        function PaggingTemplate(totalPage, currentPage) {
+            console.log(totalPage);
+            console.log(currentPage);
+            var template = "";
+            var TotalPages = totalPage;
+            var CurrentPage = currentPage;
+            var PageNumberArray = Array();
+
+
+            var countIncr = 1;
+            for (var i = currentPage; i <= totalPage; i++) {
+                PageNumberArray[0] = currentPage;
+                if (totalPage != currentPage && PageNumberArray[countIncr - 1] != totalPage) {
+                    PageNumberArray[countIncr] = i + 1;
+                }
+                countIncr++;
+            };
+            PageNumberArray = PageNumberArray.slice(0, 5);
+            var FirstPage = 1;
+            var LastPage = totalPage;
+            if (totalPage != currentPage) {
+                var ForwardOne = currentPage + 1;
+            }
+            var BackwardOne = 1;
+            if (currentPage > 1) {
+                BackwardOne = currentPage - 1;
+            }
+
+            template = "<p>" + CurrentPage + " of " + TotalPages + " pages</p>"
+            template = template + '<ul class="pagination">' +
+                '<li class="previous"><a href="#" onclick="GetOrderUsingAjax(' + FirstPage + ')"><i class="ti ti-arrow-big-left-filled"></i>&nbsp;First</a></li>' +
+                '<li><a href="#" onclick="GetOrderUsingAjax(' + BackwardOne + ')"><<</a>';
+
+            var numberingLoop = "";
+            for (var i = 0; i < PageNumberArray.length; i++) {
+                numberingLoop = numberingLoop + '<a class="page-number active" onclick="GetOrderUsingAjax(' + PageNumberArray[i] + ')" href="#">' + PageNumberArray[i] + ' &nbsp;&nbsp;</a>'
+            }
+            template = template + numberingLoop + '<a href="#" onclick="GetOrderUsingAjax(' + ForwardOne + ')" >>></a></li>' +
+                '<li class="next"><a href="#" onclick="GetOrderUsingAjax(' + LastPage + ')">Last&nbsp;<i class="ti ti-arrow-big-right-filled"></i></a></li></ul>';
+            $("#paged").append(template);
+
+        }
+
+        function UpdateStatus(id) {
+            console.log(id);
+            $.ajax({
+                type: 'POST',
+                url: 'https://localhost:44358/Order/UpdateStatus',
+                dataType: 'json',
+                data: { id: id },
+                success: function (data) {
+                    console.log(data);
+                    if (data.resultObj == true) {
+                        CreateNotification(data.message, "success");
+                        GetOrderUsingAjax(1);
+                    }
+                    else {
+                        CreateNotification(data.message, "error");
+                    }
+                },
+                error: function (emp) {
+                    alert('error');
+                }
+            })
+        }
+
+        function DeleteRecord(id){
+            $.ajax({
+                type: 'POST',
+                url: 'https://localhost:44358/Comment/DeleteComment',
+                dataType: 'json',
+                data: { id: id },
+                success: function (data) {
+                    console.log(data);
+                    if (data.resultObj == true) {
+                        CreateNotification(data.message, "success");
+                        GetOrderUsingAjax(1);
+                    }
+                    else {
+                        CreateNotification(data.message, "error");
+                    }
+                },
+                error: function (emp) {
+                    alert('error');
+                }
+            })
+        }
+    </script>
+}
+
+<style>
+    #container {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+    }
+</style>
+<div id="container"></div>
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+     data-sidebar-position="fixed" data-header-position="fixed">
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+        <!--  Header Start -->
+        <partial name="_Header" />
+        <!--  Header End -->
+        <div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title fw-semibold mb-4">List orders</h5>
+                    <form>
+                        <div class="form-actions no-color">
+                            <p>
+                                <div class="row">
+                                    <div class="col-lg-4 d-flex align-items-strech">
+                                        <input type="text" id="search_value" class="form-control" placeholder="Search for name and order id" />
+                                    </div>
+                                    <div class="col-lg-3 d-flex align-items-strech">
+                                        <input id="datepicker_start" type="text" placeholder="Start Date" class="form-control" />
+                                    </div>
+                                    <div class="col-lg-3 d-flex align-items-strech">
+                                        <input id="datepicker_end" type="text" placeholder="End Date" class="form-control" />
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <input type="button" value="Search" class="btn btn-primary" onclick="GetOrderUsingAjax()" />
+                                    </div>
+                                </div>
+                            </p>
+                        </div>
+                    </form>
+                    <div class="col-lg-12 d-flex align-items-stretch">
+                        <div class="card w-100">
+                            <div class="card-body p-4">
+                                <div class="table-responsive">
+                                    <table class="table text-nowrap mb-0 align-middle" id="tblcomments">
+                                        <thead class="text-dark fs-4">
+                                            <tr>
+                                                <th class="border-bottom-0">
+                                                    <h6 class="fw-semibold mb-0">Client Name</h6>
+                                                </th>
+                                                <th class="border-bottom-0">
+                                                    <h6 class="fw-semibold mb-0">Count Star</h6>
+                                                </th>
+                                                <th class="border-bottom-0">
+                                                    <h6 class="fw-semibold mb-0">Comment Date</h6>
+                                                </th>
+                                                <th class="border-bottom-0 text-center">
+                                                    <h6 class="fw-semibold mb-0">###</h6>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div style="margin-top:10px">
+                                    <nav aria-label="Page navigation example" id="paged">
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -141,7 +141,6 @@
             var address = document.getElementById('address');
             var phone = document.getElementById('phone');
             var delivery_date = document.getElementById('delivery_date');
-            var status = document.getElementById('status');
             var delivery_address = document.getElementById('delivery_address');
             for(var i = 0; i < selects.length; i++)
             {
@@ -167,7 +166,6 @@
             order.CustomerPhone = phone.value;
             order.CustomerEmail = email.value;
             order.DeliveryDate = delivery_date.value;
-            order.status = status.checked;
             order.delivery_address = delivery_address.value;
             order.OrderItems = productItems;
             console.log(order);
@@ -180,7 +178,9 @@
                     console.log(data);
                     if (data.resultObj == true) {
                         CreateNotification(data.message, "success");
-                        window.location.href = "https://localhost:44358/ClientApp/OrderClient/Index";
+                        setTimeout(() => {
+                            window.location.href = "https://localhost:44358/ClientApp/OrderClient/Index";
+                        }, 2000);
                     }
                     else {
                         CreateNotification(data.message, "error");
@@ -232,10 +232,6 @@
                                 <div class="mb-3">
                                     <label class="form-label">Delivery Date</label>
                                     <input id="delivery_date" type="text" class="form-control" />
-                                </div>
-                                <div class="mb-3">
-                                    <input type="checkbox" class="form-check-input" id="status">
-                                    <label class="form-check-label"  >Status Delivered</label>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Delivery Address</label>

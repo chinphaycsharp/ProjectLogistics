@@ -14,10 +14,10 @@ namespace Logistics.Data.Entities
 
         public string Id { get; set; }
         public string Name { get; set; }
-        public decimal? Price { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public bool? Isdeleted { get; set; }
+        public decimal? Price { get; set; }
 
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }

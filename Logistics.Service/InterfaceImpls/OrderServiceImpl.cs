@@ -55,6 +55,20 @@ namespace Logistics.Service.InterfaceImpls
             }
         }
 
+        public bool DeleteOrder(Order order)
+        {
+            try
+            {
+                _orderRepository.Delete(order);
+                _unitOfWork.Commit();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public Order GetOrderById(string id)
         {
             return _orderRepository.GetOrderById(id);

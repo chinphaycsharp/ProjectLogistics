@@ -24,6 +24,7 @@ namespace Logistics.Data.Dbcontext
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<VMessage> VMessages { get; set; }
         public virtual DbSet<VOrderdetail> VOrderdetails { get; set; }
         public virtual DbSet<VTopOrderMaxPrice> VTopOrderMaxPrices { get; set; }
 
@@ -90,12 +91,19 @@ namespace Logistics.Data.Dbcontext
                     .IsUnicode(false)
                     .HasColumnName("account_id");
 
-                entity.Property(e => e.ClientId).HasColumnName("client_id");
+                entity.Property(e => e.Alias)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasColumnName("alias");
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasColumnName("created_date")
                     .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.CustomerName)
+                    .HasMaxLength(50)
+                    .HasColumnName("customer_name");
 
                 entity.Property(e => e.IsAdmin).HasColumnName("is_admin");
 
@@ -125,7 +133,7 @@ namespace Logistics.Data.Dbcontext
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.ClientId).HasColumnName("client_id");
+                entity.Property(e => e.ClientName).HasColumnName("client_name");
 
                 entity.Property(e => e.Content)
                     .IsRequired()
@@ -267,10 +275,43 @@ namespace Logistics.Data.Dbcontext
                     .HasMaxLength(50)
                     .HasColumnName("name");
 
+                entity.Property(e => e.Price)
+                    .HasColumnType("decimal(18, 0)")
+                    .HasColumnName("price");
+
                 entity.Property(e => e.UpdatedDate)
                     .HasColumnType("datetime")
                     .HasColumnName("updated_date")
                     .HasDefaultValueSql("(getdate())");
+            });
+
+            modelBuilder.Entity<VMessage>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("v_messages");
+
+                entity.Property(e => e.Alias)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasColumnName("alias");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("created_date");
+
+                entity.Property(e => e.CustomerName)
+                    .HasMaxLength(50)
+                    .HasColumnName("customer_name");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.IsAdmin).HasColumnName("is_admin");
+
+                entity.Property(e => e.Message)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("message");
             });
 
             modelBuilder.Entity<VOrderdetail>(entity =>

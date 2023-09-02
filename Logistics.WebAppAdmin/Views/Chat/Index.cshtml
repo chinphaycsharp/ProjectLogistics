@@ -1,0 +1,252 @@
+﻿@using Logistics.WebAppAdmin.Commons;
+@using Microsoft.AspNetCore.Http
+@using Newtonsoft.Json;
+@using QuanLySinhVien.WebApp.Commons;
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var sess = HttpContextAccessor.HttpContext.Session.GetString(CommonConst.user_session);
+    UserStorage user = JsonConvert.DeserializeObject<UserStorage>(sess);
+    var isAdmin = false;
+    if (user != null)
+    {
+        isAdmin = true;
+    }
+}
+
+<style>
+    * {
+        font-family: 'Avenir';
+    }
+
+    .bubbleWrapper {
+        padding: 10px 10px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: column;
+        align-self: flex-end;
+        color: #fff;
+    }
+
+    .inlineContainer {
+        display: inline-flex;
+    }
+
+        .inlineContainer.own {
+            flex-direction: row-reverse;
+        }
+
+    .inlineIcon {
+        width: 20px;
+        object-fit: contain;
+    }
+
+    .ownBubble {
+        min-width: 60px;
+        max-width: 700px;
+        padding: 14px 18px;
+        margin: 6px 8px;
+        background-color: #5b5377;
+        border-radius: 16px 16px 0 16px;
+        border: 1px solid #443f56;
+    }
+
+    .otherBubble {
+        min-width: 60px;
+        max-width: 700px;
+        padding: 14px 18px;
+        margin: 6px 8px;
+        background-color: #6C8EA4;
+        border-radius: 16px 16px 16px 0;
+        border: 1px solid #54788e;
+    }
+
+    .own {
+        align-self: flex-end;
+    }
+
+    .other {
+        align-self: flex-start;
+    }
+
+    span.own,
+    span.other {
+        font-size: 14px;
+        color: grey;
+    }
+</style>
+
+@section Scripts
+    {
+    <script src="~/assets/js/notification.js"></script>
+    <script src="~/lib/microsoft/signalr/dist/signalr.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:44358/realtime").build();
+        console.log(connection);
+        init();
+
+        function init() {
+            connection.start()
+                .catch(err => console.log(err.toString()));
+            LoadMessages();
+        }
+
+        function LoadMessages() {
+            var searchDto = new Object();
+            searchDto.accountId = null;
+            searchDto.isAdmin = null;
+
+            $.ajax({
+                type: "GET",
+                url: "https://localhost:44358/Chat/GetMessages",
+                success: function (data) {
+                    console.log(data);
+                    var template = "";
+                    $.each(data.resultObj, function (i, item) {
+                        var date_split = item.createdDate.split('T');
+                        var time = date_split[date_split.length-1];
+                        var time_split = time.split(':');
+                        var time_final = time_split[time_split.length - 3] + ":" + time_split[time_split.length - 2];
+                        console.log(date_split);
+                        if (item.isAdmin){
+                            template += "<div class='bubbleWrapper'>"
+                                + "<div class='inlineContainer own'>"
+                                + "<img class='inlineIcon' src='https://www.pinclipart.com/picdir/middle/205-2059398_blinkk-en-mac-app-store-ninja-icon-transparent.png'>"
+                                + "<div class='ownBubble own'>" + item.message + "</div></div>"
+                                + "<span class='own'>" + time_final + "</span></div > "
+                        }
+                        else{
+                            template += "<div class='bubbleWrapper'><div class='inlineContainer'><img class='inlineIcon' src='https://cdn1.iconfinder.com/data/icons/ninja-things-1/1772/ninja-simple-512.png' >"
+                                + "<div class='otherBubble other'>" + item.message + "</div></div>"
+                                + "<span class='other'>" + time_final + "</span></div > "
+                        }
+                    });
+                    $('#chat-box').append(template);
+                }
+            });
+
+        }
+
+        function SendMessage(username, isadmin){
+            var message = document.getElementById('txtmes').value;
+            console.log(message);
+            console.log(username);
+            console.log(isadmin);
+            var model = new Object();
+            model.account_id = username;
+            model.message = message;
+            model.customer_name = null;
+            model.isadmin = isadmin;
+            model.alias = username;
+            var body = JSON.stringify(model);
+            connection.invoke('SendMessage', body);
+        }
+
+        connection.on("ReceiveMessage", function (account_id, message, customer_name, isAdmin, alias, CreatedDate) {
+            console.log(account_id);
+            console.log(message);
+            console.log(customer_name);
+            console.log(isAdmin);
+            console.log(alias);
+            console.log(CreatedDate);
+            var template = "";
+            var date_split = CreatedDate.split('T');
+            var time = date_split[date_split.length - 1];
+            var time_split = time.split(':');
+            var time_final = time_split[time_split.length - 3] + ":" + time_split[time_split.length - 2];
+            if (isAdmin) {
+                template += "<div class='bubbleWrapper'>"
+                    + "<div class='inlineContainer own'>"
+                    + "<img class='inlineIcon' src='https://www.pinclipart.com/picdir/middle/205-2059398_blinkk-en-mac-app-store-ninja-icon-transparent.png'>"
+                    + "<div class='ownBubble own'>" + message + "</div></div>"
+                    + "<span class='own'>" + time_final + "</span></div > "
+            }
+            else {
+                template += "<div class='bubbleWrapper'><div class='inlineContainer'><img class='inlineIcon' src='https://cdn1.iconfinder.com/data/icons/ninja-things-1/1772/ninja-simple-512.png' >"
+                    + "<div class='otherBubble other'>" + message + "</div></div>"
+                    + "<span class='other'>" + time_final + "</span></div > "
+            }
+            $('#chat-box').append(template);
+        });
+    </script>
+}
+
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+     data-sidebar-position="fixed" data-header-position="fixed">
+    <div class="body-wrapper">
+        <!--  Header Start -->
+        <header class="app-header">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <ul class="navbar-nav">
+                    <li class="nav-item d-block d-xl-none">
+                        <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+                            <i class="ti ti-menu-2"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-icon-hover" href="javascript:void(0)">
+                            <i class="ti ti-bell-ringing"></i>
+                            <div class="notification bg-primary rounded-circle"></div>
+                        </a>
+                    </li>
+                </ul>
+                <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+                    <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+                        <a href="https://adminmart.com/product/modernize-free-bootstrap-admin-dashboard/" target="_blank" class="btn btn-primary">Download Free</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                <img src="../assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                                <div class="message-body">
+                                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-user fs-6"></i>
+                                        <p class="mb-0 fs-3">My Profile</p>
+                                    </a>
+                                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-mail fs-6"></i>
+                                        <p class="mb-0 fs-3">My Account</p>
+                                    </a>
+                                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                                        <i class="ti ti-list-check fs-6"></i>
+                                        <p class="mb-0 fs-3">My Task</p>
+                                    </a>
+                                    <a href="./authentication-login.html" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!--  Header End -->
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title fw-semibold mb-4">Chat with Customer</h5>
+                    <div class="card">
+                        <div class="card-body" style="overflow-y:scroll;height:650px" id="chat-box">
+                        </div>
+                        <div id="container"></div>
+                    </div>
+                    <form>
+                        <div class="form-actions no-color">
+                            <p>
+                                <div class="row">
+                                    <div class="col-lg-11 d-flex align-items-strech">
+                                        <input type="text" id="txtmes" class="form-control" placeholder="Send message..." />
+                                    </div>
+                                    <div class="col-lg-1">
+                                        <button type="button" value="Search" class="btn btn-primary" onclick="SendMessage('@user.username','@isAdmin')"><i class="ti ti-send"></i></button>
+                                    </div>
+                                </div>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

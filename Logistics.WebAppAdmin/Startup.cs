@@ -2,9 +2,11 @@ using Logistics.Data.Dbcontext;
 using Logistics.Service.InterfaceImpls;
 using Logistics.Service.Interfaces;
 using Logistics.Service.Repositories;
+using Logistics.WebAppAdmin.HubConfig;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -40,8 +42,8 @@ namespace Logistics.WebAppAdmin
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
-            //services.AddScoped<IStudentScoreRepository, StudentScoreRepository>();
-            //services.AddScoped<IScoreRepository, ScoreRepository>();
+            services.AddScoped<IChatRepository, ChatRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
             //services.AddScoped<ISubjectRepository, SubjectRepository>();
             //services.AddScoped<IVStudentsubjectscoreRepository, VStudentsubjectRepository>();
             string connection = Configuration.GetConnectionString("Quanlysinhvien");
@@ -54,10 +56,11 @@ namespace Logistics.WebAppAdmin
             services.AddScoped<IOrderService, OrderServiceImpl>();
             services.AddScoped<IProductService, ProductServiceImpl>();
             services.AddScoped<IOrderDetailService, OrderItemServiceImpl>();
-            //services.AddScoped<IVStudentTopHighMediumScoreService, VStudentTopHighMediumScoreImpl>();
-            //services.AddScoped<IScoreService, ScoreServiceImpl>();
+            services.AddScoped<IChatService, ChatServiceImpl>();
+            services.AddScoped<ICommentService,CommentServiceImpl>();
             //services.AddScoped<ISubjectService, SubjectServiceImpl>();
-
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSignalR();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -103,6 +106,11 @@ namespace Logistics.WebAppAdmin
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<RealTimeHub>("/realtime");
+            });
 
             app.UseEndpoints(endpoints =>
             {

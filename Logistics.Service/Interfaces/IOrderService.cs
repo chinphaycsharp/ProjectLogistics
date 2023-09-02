@@ -14,5 +14,7 @@ namespace Logistics.Service.Interfaces
         bool CreateOrder(OrderCreateDTO order);
         bool UpdateStatus(Order order);
         bool UpdateOrder(Order order);
+        bool DeleteOrder(Order order);
+       
     }
 }

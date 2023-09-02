@@ -1,0 +1,1 @@
+Scaffold-DbContext "Server=DESKTOP-C07FMHV;Database=Logistics;User ID=quangle;Password=07081999;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Temp

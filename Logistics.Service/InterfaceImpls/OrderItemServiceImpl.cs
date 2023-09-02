@@ -27,7 +27,7 @@ namespace Logistics.Service.InterfaceImpls
         {
             OrderDetail o = new OrderDetail()
             {
-                Id = order.Id,
+                OrderId = order.OrderId,
                 ProductId = order.ProductId,
                 Quantity = order.Quantity,
                 TotalPrice = order.TotalPrice,
@@ -43,6 +43,26 @@ namespace Logistics.Service.InterfaceImpls
             {
                 return false;
             }
+        }
+
+        public bool DeleteOrderDetail(OrderDetail order)
+        {
+            try
+            {
+                _orderDetailRepository.Delete(order);
+                _unitOfWork.Commit();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public List<OrderDetail> GetAllOrderDetailByOrderId(string orderId)
+        {
+            var orderdetails = _orderDetailRepository.GetAll().Where(x=>x.OrderId == orderId);
+            return orderdetails.ToList();
         }
     }
 }

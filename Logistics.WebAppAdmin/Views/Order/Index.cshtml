@@ -69,7 +69,7 @@
                                 + "<td>" + item.deliveryDate + "</td>"
                                 + "<td>" + item.estimateDeliveryDate + "</td>"
                                 + "<td>" + btnCart + "</td>"
-                                + "<td> <a class='btn btn-warning' href='/Order/Detail/" + item.id + "'><i class='ti ti-edit'></i></a><button type ='button' class='btn btn-danger' onclick='DeleteRecord(" + item.id + ")' ><i class='ti ti-trash-x'></i></button></td>"
+                                + "<td> <a class='btn btn-warning' href='/Order/Detail/" + item.id + "'><i class='ti ti-edit'></i></a><button type ='button' class='btn btn-danger' onclick='DeleteRecord(\"" + item.id + "\")' ><i class='ti ti-trash-x'></i></button></td>"
                                 + "</tr>";
                             ;
                         });
@@ -148,6 +148,28 @@
                 }
             })
         }
+
+        function DeleteRecord(id) {
+            $.ajax({
+                type: 'POST',
+                url: 'https://localhost:44358/Order/DeleteOrder',
+                dataType: 'json',
+                data: { id: id },
+                success: function (data) {
+                    console.log(data);
+                    if (data.resultObj == true) {
+                        CreateNotification(data.message, "success");
+                        GetOrderUsingAjax(1);
+                    }
+                    else {
+                        CreateNotification(data.message, "error");
+                    }
+                },
+                error: function (emp) {
+                    alert('error');
+                }
+            })
+        }
     </script>
 }
 
@@ -169,7 +191,7 @@
         <div>
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title fw-semibold mb-4">Danh sách sinh viên</h5>
+                    <h5 class="card-title fw-semibold mb-4">List orders</h5>
                     <form>
                         <div class="form-actions no-color">
                             <p>

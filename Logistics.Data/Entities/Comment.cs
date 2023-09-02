@@ -8,7 +8,7 @@ namespace Logistics.Data.Entities
     public partial class Comment
     {
         public int Id { get; set; }
-        public int? ClientId { get; set; }
+        public string ClientName { get; set; }
         public string Content { get; set; }
         public int? CountStars { get; set; }
         public DateTime? CreatedDate { get; set; }

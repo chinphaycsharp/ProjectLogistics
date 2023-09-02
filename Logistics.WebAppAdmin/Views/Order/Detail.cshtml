@@ -60,7 +60,9 @@
                     console.log(data);
                     if (data.resultObj == true) {
                         CreateNotification(data.message, "success");
-                        window.location.href = "https://localhost:44358/Order/Index";
+                        setTimeout(() => {
+                            window.location.href = "https://localhost:44358/Order/Index";
+                        }, 2000);
                     }
                     else {
                         CreateNotification(data.message, "error");

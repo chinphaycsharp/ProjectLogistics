@@ -10,6 +10,8 @@ namespace Logistics.Service.Interfaces
 {
     public interface IOrderDetailService
     {
+        List<OrderDetail> GetAllOrderDetailByOrderId(string orderId);
         bool CreateOrderDetail(OrderItem order);
+        bool DeleteOrderDetail(OrderDetail order);
     }
 }

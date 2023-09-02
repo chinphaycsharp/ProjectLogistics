@@ -1,14 +1,13 @@
-﻿using Logistics.Data.Entities;
+﻿using Logistics.Data.DTO.Chat;
+using Logistics.Data.Entities;
 using Logistics.Service.Interfaces;
-using Logistics.Service.Repositories;
 using Logistics.WebAppAdmin.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
+using Newtonsoft.Json;
+using QuanLySinhVien.WebApp.Commons;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Logistics.WebAppAdmin.Controllers
 {
@@ -39,5 +38,7 @@ namespace Logistics.WebAppAdmin.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+       
     }
 }
